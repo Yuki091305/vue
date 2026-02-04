@@ -1,4 +1,3 @@
-
 Vue.component('product-details', {
     props: {
         details: {
@@ -45,9 +44,6 @@ Vue.component('product', {
             <ul>
                <li v-for="sizes in sizes">{{ sizes }}</li>
             </ul>
-            <div class="cart">
-               <p>Cart({{ cart }})</p>
-            </div>
             <button v-on:click="addToCart" :disabled="!inStock" :class="{ disabledButton: !inStock }">
                Add to cart
             </button>
@@ -79,17 +75,15 @@ Vue.component('product', {
             variantQuantity: 0
         }],
         sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-        cart: 0,
     }
     },
    methods: {
-       addToCart() {
-            this.cart += 1
+        addToCart() {
+            this.$emit('add-to-cart',
+            this.variants[this.selectedVariant].variantId);
         },
         deleteToCart(){
-            if (this.cart > 0
-            ){
-            this.cart -= 1}
+            this.$emit('remote-from-cart');
         },
         updateProduct(index) {
             this.selectedVariant = index;
@@ -108,9 +102,9 @@ Vue.component('product', {
     },
     sale(){
         if(this.onSale){
-            return this.brand + '' + this.product + 'is on sale!';
+            return this.brand + ' ' + this.product + 'is on sale!';
         } else {
-            return this.brand + '' + this.product + 'is not on sale.';
+            return this.brand + ' ' + this.product + 'is not on sale.';
         }
     },
        shipping() {
@@ -126,9 +120,22 @@ Vue.component('product', {
 let app = new Vue({
    el: '#app',
    data: {
-       premium: true
+       premium: true,
+       cart: []
    },
-})
+
+   methods: {
+    updateCart(id) {
+       this.cart.push(id);
+    },
+
+    decreaseCart(){
+        if(this.cart > 0){
+            this.cart -= 1;
+        }
+    },
+   }
+});
 
 
 
